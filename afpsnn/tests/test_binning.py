@@ -35,3 +35,17 @@ def test_log_spaced_frequencies_values():
 def test_log_spaced_frequencies_invalid_bins():
     with pytest.raises(ValueError):
         log_spaced_frequencies(1.0, 10.0, 1)
+
+
+@pytest.mark.parametrize(
+    "f_min, f_max",
+    [
+        (0.0, 10.0),
+        (-5.0, 10.0),
+        (1.0, 0.0),
+        (1.0, -5.0),
+    ],
+)
+def test_log_spaced_frequencies_invalid_frequency_bounds(f_min, f_max):
+    with pytest.raises(ValueError):
+        log_spaced_frequencies(f_min, f_max, 2)
