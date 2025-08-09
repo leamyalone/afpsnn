@@ -4,7 +4,7 @@
 sim:
   seconds: 600                 # total simulated time [§11]
   dt_bucket_s: 0.002           # must equal features.router.dt_bucket_s [§4.4, §11]
-  nbuckets: 100                # ring size; overrides features.router.horizon_buckets [§1.7, §4.4]
+  nbuckets: 100                # ring size; overrides features.router.horizon_buckets [API §1.7, MANIFEST §4.4]
   deterministic: false         # stable-sort drain + seeded rounding when true [§4.5]
   seed: 0                      # RNG seed used when deterministic=true [§4.5]
 
