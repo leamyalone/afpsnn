@@ -1,11 +1,7 @@
 import numpy as np
 import pytest
-import sys
-from pathlib import Path
 
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-
-from models.core.signal import phase_bin, log_spaced_frequencies
+from afpsnn.models.core.signal import phase_bin, log_spaced_frequencies
 
 
 def test_phase_bin_scalar_and_array():
