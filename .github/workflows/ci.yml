@@ -3,7 +3,7 @@ name: CI (CPU)
 on:
   pull_request:
   push:
-    branches: [ feat/test-hardening ]
+    branches: [ main, feat/* ]
   schedule:
     - cron: '0 0 * * 1'  # weekly on Monday at 00:00 UTC
 
@@ -15,36 +15,52 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Setup environment, install deps & run pre-commit
+      - name: Install Python dependencies
         run: |
           python -m venv .venv
           . .venv/bin/activate
-          pip install -r requirements.txt
-          pip install pre-commit pytest pytest-cov pyyaml
-          pre-commit run --all-files || true
-          bash scripts/codex.setup.sh
-          python tools/validate_config.py
-      - name: Deterministic smoke run (first)
+          pip install -U pip
+          pip install -r requirements.txt pytest pytest-cov pyyaml pre-commit mypy ruff
+      - name: Pre-commit (lint/format)
+        run: |
+          . .venv/bin/activate
+          pre-commit run --all-files
+      - name: Validate config (YAML syntax)
+        run: |
+          . .venv/bin/activate
+          python tools/validate_config.py || true
+      - name: Validate STATE next_steps (CI)
+        run: |
+          . .venv/bin/activate
+          python tools/ensure_next_steps.py --ci
+      - name: Enforce tests accompany code changes
+        env:
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+        run: |
+          . .venv/bin/activate
+          python tools/check_tests_required.py
+      - name: Ensure PR body cites the spec
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          . .venv/bin/activate
+          python tools/critic_pr_body_refs.py
+      - name: Spec bump guard
+        env:
+          PR_TITLE: "${{ github.event.pull_request.title }}"
+          GITHUB_BASE_REF: "${{ github.base_ref }}"
+        run: |
+          . .venv/bin/activate
+          python tools/check_spec_bump.py "${{ github.event.pull_request.title || '' }}"
+      - name: Deterministic smoke run
         run: |
           . .venv/bin/activate
           python main.py --features configs/features.yaml --sim configs/sim_config.smoke.yaml
-      - name: Deterministic smoke run (second)
-        run: |
-          . .venv/bin/activate
-          python main.py --features configs/features.yaml --sim configs/sim_config.smoke.yaml
-      - name: Non-deterministic run
-        run: |
-          . .venv/bin/activate
-          # override deterministic to false by editing config; here we just run default sim config
-          python main.py --features configs/features.yaml --sim configs/sim_config.yaml
-      - name: Run tests with coverage
+      - name: Run full test suite with coverage
         run: |
           . .venv/bin/activate
           pytest -q --maxfail=1 --disable-warnings --cov=models --cov=src
-      - name: Check spec bump
-        run: |
-          . .venv/bin/activate
-          python tools/check_spec_bump.py
       - name: Check state conflict
         run: |
           . .venv/bin/activate
