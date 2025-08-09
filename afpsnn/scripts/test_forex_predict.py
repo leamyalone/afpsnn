@@ -1,0 +1,1 @@
+print('forex stub')

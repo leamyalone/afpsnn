@@ -1,0 +1,6 @@
+sim:
+  seconds: 10
+  dt_bucket_s: 0.002
+  nbuckets: 100
+  deterministic: false
+  seed: 0
