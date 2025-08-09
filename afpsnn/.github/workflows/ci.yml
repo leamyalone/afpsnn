@@ -1,0 +1,23 @@
+name: CI (CPU)
+on:
+  pull_request:
+  push:
+    branches: [ chore/codex-support ]
+jobs:
+  cpu-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - name: Setup + Smoke + Tests
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          bash scripts/codex.setup.sh
+          python main.py --features configs/features.yaml --sim configs/sim_config.smoke.yaml
+          pytest -q
+      - name: Spec bump guard
+        run: |
+          . .venv/bin/activate
+          python tools/check_spec_bump.py
