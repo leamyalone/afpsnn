@@ -82,7 +82,8 @@ def phase_bin(phi, num_bins):
     ndarray or int
         Bin index(es) in the range ``[0, P-1]``. Scalar inputs yield scalars.
     """
-
+    if not isinstance(num_bins, (int, np.integer)):
+        raise TypeError("num_bins must be an integer")
     if num_bins < 1:
         raise ValueError("num_bins must be >= 1")
 
