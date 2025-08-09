@@ -1,17 +1,16 @@
-# Session State (source of truth)
-
-current_branch: chore/codex-support
-task_id: S01-T02
-mode: cpu
-deterministic: true
-seed: 0
-
-next_steps:
-- [ ] Ensure CPU CI passes on PR
-- [ ] Add pre-commit usage note to README (optional)
-- [ ] Request approval to merge to main
+current_branch: main
+mode:
+  deterministic: true
+  seed: 0
+open_pr: null
 
 last_session:
-  at: TBD
-  summary: "Initialized repo rails; smoke/tests green locally"
-  pr: TBD
+  at: <timestamp America/New_York>
+  summary: Merged PR #12 (test-hardening suite + CI polish) into baseline.
+
+next_steps:
+  - [ ] Replace placeholders with real assertions:
+        tests/test_router_spill_no_drop.py
+        tests/test_kernel_order.py
+        tests/test_plasticity_sweeps.py
+  - [ ] Add metrics JSON dump in smoke and assert §12 bands in a test.
