@@ -1,6 +1,18 @@
+# AFPSNN SIMULATION CONFIG (runtime)
+# Controls the outer simulation loop; may override some router runtime params.
+
 sim:
-  seconds: 10
-  dt_bucket_s: 0.002
-  nbuckets: 100
-  deterministic: false
-  seed: 0
+  seconds: 600                 # total simulated time [§11]
+  dt_bucket_s: 0.002           # must equal features.router.dt_bucket_s [§4.4, §11]
+  nbuckets: 100                # ring size; overrides features.router.horizon_buckets [§1.7, §4.4]
+  deterministic: false         # stable-sort drain + seeded rounding when true [§4.5]
+  seed: 0                      # RNG seed used when deterministic=true [§4.5]
+
+  logging:
+    tick_interval_steps: 1     # emit ops metrics every step [§12]
+    snapshot_history_s: 2.0    # cadence for summary metrics (seconds)
+
+  guards:
+    max_spill_events: 0        # fail run if spill_counter increases beyond this [§4.6, §12]
+    max_p95_bucket_occupancy: 0.80  # alert/action if exceeded [§12]
+    enforce_kernel_order: true # assert that step order matches §11 exactly
