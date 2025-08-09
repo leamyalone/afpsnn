@@ -1,17 +1,23 @@
+# Session State (source of truth)
+
 current_branch: main
 mode:
   deterministic: true
   seed: 0
-open_pr: https://github.com/leamyalone/afpsnn/pull/13
+open_pr: null
 
 last_session:
   at: 2025-08-09T14:33:27-04:00
-  summary: Added metrics JSON dump and §12 guardrail test.
-  pr: https://github.com/leamyalone/afpsnn/pull/13
+  summary: "Added metrics JSON dump and §12 guardrail test."
+  pr: 13
 
 next_steps:
-  - [x] Replace placeholders with real assertions:
-        tests/test_router_spill_no_drop.py
-        tests/test_kernel_order.py
-        tests/test_plasticity_sweeps.py
-  - [x] Add metrics JSON dump in smoke and assert §12 bands in a test.
+  - "Replace placeholders with real assertions in: tests/test_router_spill_no_drop.py, tests/test_kernel_order.py, tests/test_plasticity_sweeps.py"
+  - "Add metrics JSON dump in smoke and assert §12 bands in a test."
+
+done: []
+
+backlog:
+  - "Tighten determinism: add bit-equality test for drain on random seeds"
+  - "Implement real spill/no-drop simulator harness for router"
+  - "Add Δg(Δφ) analytical sweep fixtures for ANTI variant"
