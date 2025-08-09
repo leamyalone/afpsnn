@@ -1,0 +1,19 @@
+name: Sprint Task
+description: Create a Sprint-01 task with acceptance criteria
+title: "S01-T0X: <short>"
+labels: ["sprint-01"]
+body:
+  - type: textarea
+    attributes:
+      label: Scope
+      description: Reference MANIFEST sections (e.g., §4.4–§4.6).
+  - type: textarea
+    attributes:
+      label: Acceptance
+      description: Bullet list of pass conditions.
+  - type: textarea
+    attributes:
+      label: Files to touch
+  - type: textarea
+    attributes:
+      label: Tests to add
