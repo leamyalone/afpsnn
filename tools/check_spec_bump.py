@@ -17,7 +17,11 @@ if not manifest_path.exists():
     print("AFPSNN-MANIFEST.md not found"); sys.exit(1)
 
 manifest = manifest_path.read_text(encoding="utf-8", errors="ignore")
-m = re.search(r"Spec version:\s*v(\d+\.\d+\.\d+)", manifest)
+
+# The manifest line is formatted as "Spec version: **v0.3.5**" with markdown
+# emphasis. Accept optional surrounding asterisks so the check works even if
+# the version string is bolded.
+m = re.search(r"Spec version:\s*\**v(\d+\.\d+\.\d+)\**", manifest)
 if not m:
     print("Unable to read spec version from AFPSNN-MANIFEST.md"); sys.exit(1)
 version = m.group(1)

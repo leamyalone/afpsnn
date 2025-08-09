@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from afpsnn.models.core.signal import phase_bin, log_spaced_frequencies
+from models.core.signal import phase_bin, log_spaced_frequencies
 
 
 def test_phase_bin_scalar_and_array():
