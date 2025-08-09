@@ -1,0 +1,53 @@
+name: Fast Check
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  fast:
+    runs-on: [self-hosted, Windows, X64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup environment and run pre-commit
+        shell: powershell
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\Activate.ps1
+          python -m pip install -U pip
+          python -m pip install -r requirements.txt pytest pyyaml pre-commit mypy ruff
+          .\.venv\Scripts\pre-commit.exe run --all-files
+
+      - name: Tests-required guard
+        env:
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+        shell: powershell
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          python tools/check_tests_required.py
+
+      - name: Spec references check
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        shell: powershell
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          python tools/critic_pr_body_refs.py
+
+      - name: Smoke run
+        shell: powershell
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          python main.py --features configs/features.yaml --sim configs/sim_config.smoke.yaml
+
+      - name: Pytest (fast subset)
+        shell: powershell
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pytest -q -k "wrap or bin or kernel_order" --maxfail=1 --disable-warnings
