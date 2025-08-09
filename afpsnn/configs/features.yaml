@@ -1,1 +1,161 @@
 features: {}
+# AFPSNN FEATURES & DEFAULTS (runtime config)
+# This file is NOT normative. If anything here conflicts with AFPSNN-MANIFEST v0.3.5,
+# the MANIFEST wins. Section tags like [§X.Y] point to the spec clauses they map to.
+
+meta:
+  spec_version: "v0.3.5"    # [§0] Traceability only; does not change behavior.
+  notes: >
+    Changing defaults here does not alter the spec. If a change should become normative,
+    bump the MANIFEST version and mirror the value in §16.
+
+features:
+
+  # ----------------------------- STATE SPACE & BINNING -----------------------------
+  frequencies:                # [§1.1]
+    f_min: 0.1                # Hz
+    f_max: 2000.0             # Hz
+    bins: 256                 # B
+    phase_bins: 36            # P  [§1.2]
+    f_ref: 10.0               # Hz  used in decay exponents [§2.1]
+
+  # ----------------------------------- DYNAMICS -----------------------------------
+  decay:                      # [§2.1]
+    tau_f_ref_s: 0.020        # s   τ_f,ref; α_f = 1/τ_f,ref
+    tau_s_ref_s: 0.180        # s   τ_s,ref; α_s = 1/τ_s,ref
+    gamma_f: 1.0              # exponent on (f_b / f_ref) for fast pool
+    gamma_s: 1.0              # exponent on (f_b / f_ref) for slow pool
+
+  combine:                    # [§2.3]
+    w_f: 0.08                 # fast-pool weight (pre-modulation)
+    w_s: 0.06                 # slow-pool weight
+
+  thresholds:                 # [§2.4]
+    T_base: 2.5
+    T_min: 0.1
+    lambda_F: 0.4             # frequency-centric sensitivity scale
+    lambda_P: 0.4             # phase-centric sensitivity scale
+
+  # ---------------------------------- EMISSION ------------------------------------
+  schmitt:                    # [§3.1]
+    alpha_hyst: 0.7           # T_down = α_hyst * T_up_eff
+    Tup_init: 2.5             # initial per-bin up-threshold
+  emit:                       # [§3.2–3.3]
+    schmitt: true             # Schmitt path is mandatory baseline (no Top-K)
+    energy_budget: false      # optional snapshot path (kept OFF in Sprint-01)
+    E_target: 0.95            # Σ|X|² coverage when snapshot is ON
+
+  refractory:                 # [§11 step 4.9] (kicks applied post step 5)
+    enabled: true
+    scale_ref: 1.2            # multiplier applied on spike; T_up_scale ≥ scale_ref
+    tau_ref_s: 0.050          # s   relaxation back to 1.0
+
+  # ------------------------------- NEUROMODULATION --------------------------------
+  pacers:                     # [§7.1–§7.3]
+    theta:
+      enabled: true
+      freq_hz: 6.0
+      lut_size: 64            # linear interpolation inside kernel
+      # Each entry maps theta phase to multiplicative scales [§7.1]
+      phase_to_scales_lut:
+        T_scale: [1.1, 1.0, 0.9, 1.0]      # anchor list expanded to 64 uniformly
+        lambda_scale: [0.9, 1.0, 1.1, 1.0]
+      gate_plasticity: true   # when enabled, learning gates follow theta phase
+    gamma:
+      enabled: true
+      freq_hz: 40.0
+      regions: 8              # equal θ-slices [§7.2]
+      wf_scale_peak: 1.2      # peak boost for w_f_eff regionally
+
+  # --------- THRESHOLD–MEMORY SPAN COUPLING (Keep temporal span stable) ----------
+  span_coupling:              # [§8]
+    enabled: true
+    k_f: 1.0
+    k_s: 1.0
+    T0: 2.5
+    epsilon_T: 0.02           # trigger to recompute τ_f/τ_s when |T−prev|/T0 > ε_T
+
+  # ------------------ HISTORY AS 3D LANDSCAPE VIA MULTI-TAU TRACES ----------------
+  history:                    # [§9]
+    multitau_enabled: true
+    taus_s: [0.05, 0.1, 0.2, 0.5]   # per-bin |X| EWMA τ set
+
+  # ------------------------------------ ROUTER ------------------------------------
+  router:                     # [§4.4–§4.6, §11, §12]
+    dt_bucket_s: 0.002        # s   global bucket step [normative units]
+    horizon_buckets: 100      # default Nb; sim_config.nbuckets can override at runtime
+    deterministic: false      # enable stable sort + segmented reduce [§4.5]
+    seed: 0                   # used only when deterministic=true for RNG in delay rounding
+    max_bucket_size: 131072   # spill-forward kicks in beyond this [§4.6]
+    backpressure:
+      enable: true
+      bucket_p95_max: 0.80    # [§12] ops guardrail
+      action: raise_schmitt_Tup   # {raise_schmitt_Tup, damp_input_gains}
+      raise_factor: 1.10          # multiplicative bump to T_up in affected region
+
+  # ----------------------------- EDGE MASKS / BAND GROUPS -------------------------
+  edge_masks:                 # [§4.3, §6.0 masks usage]
+    enabled: true
+    groups: octave            # {octave, quartile, custom}
+    lr: 0.0                   # learning rate for masks; ignored in Sprint-01 (static masks)
+
+  # ---------------------- INHIBITION, FAMILIES & RESIDUAL ENERGY ------------------
+  neurons:                    # [§2.6, §6]
+    families:
+      F_type: 0.7
+      Phi_type: 0.2
+      Hybrid_OR: 0.1
+      Hybrid_AND: 0.0
+      Anti_phase_fraction: 0.1
+    residual_rho: 0.7         # [§2.6] post-spike scaling of pools
+    inhibitory:
+      enabled: true
+      target_spike_rate_hz: 5.0
+      adaptive_gain_rate: 1.0e-3   # slow row-wise gain adaptation toward target
+
+  # ----------------------------------- PLASTICITY ---------------------------------
+  plasticity:                 # [§5.1–§5.4]
+    stdp: true
+    delay: true
+    structural: false         # OFF in Sprint-01
+    eta_g: 1.0e-4             # STDP rate
+    tau_g: 0.050              # s
+    eta_d: 1.0e-4             # delay adaptation rate
+    tau_d: 0.050              # s
+    dg_per_min_cap: 0.02      # |Δg| cap per minute
+    dd_per_min_cap: 1         # |Δdelay| (in buckets) per minute
+    u_beta: 0.05              # utility trace EWMA factor [§5.3]
+    u_min: 0.0                # prune threshold (structural off here)
+    hysteresis_windows: 10    # windows needed < u_min for prune (future use)
+    mod_gate_default: 0.3     # used when theta.gate_plasticity=false
+
+  # ----------------------------- LEARNING FIFO SIZING -----------------------------
+  learning_fifo:              # [§5.4]
+    # MUST satisfy: Kfifo ≥ ceil(3 * max(tau_g, tau_d) / router.dt_bucket_s)  [§5.4]
+    # With tau_* = 0.050 s and dt_bucket_s = 0.002 s → ceil(3*0.050/0.002) = 75
+    Kfifo: 96                 # ≥75, padded for GPU-friendly alignment
+
+  # ------------------------------------ SAFETY ------------------------------------
+  safety:                     # [§12]
+    loop_gain_soft: 0.85
+    loop_gain_max: 0.90
+    spike_fraction_min: 0.005
+    spike_fraction_max: 0.10
+
+  # ----------------------------------- PRECISION ----------------------------------
+  precision:                  # [§0 (Precision), §1.2 dtypes]
+    pools_fp32: true          # fast/slow/X/M/Φ in fp32
+    params_fp16: true         # S_F, S_P, gains, phases, masks in fp16
+
+  # ----------------------------------- GEOMETRY -----------------------------------
+  geometry:                   # [§10]
+    Z: 32
+    Theta: 128
+    Depth: 1
+    twist_beta: 0.25          # φ*(z,θ) = 2π*((z + βθ) mod Z)/Z
+
+  # -------------------------------------- I/O -------------------------------------
+  io:                         # [§10 Inputs/Outputs]
+    dual_cap: true
+    resonator_ring: true      # raw waveform (f,A,φ) decomposition goes here
+    indicator_cap: true       # indicators encoded as (f,A,φ) or low-freq injections
