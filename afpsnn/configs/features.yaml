@@ -1,4 +1,3 @@
-features: {}
 # AFPSNN FEATURES & DEFAULTS (runtime config)
 # This file is NOT normative. If anything here conflicts with AFPSNN-MANIFEST v0.3.5,
 # the MANIFEST wins. Section tags like [§X.Y] point to the spec clauses they map to.
