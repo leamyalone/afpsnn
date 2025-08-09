@@ -1,27 +1,43 @@
-name: GPU Tests
+name: GPU CI
+
 on:
   pull_request:
   workflow_dispatch:
+
 jobs:
-  gpu-tests:
-    runs-on: [self-hosted, gpu, linux]
+  gpu-ci:
+    runs-on: [self-hosted, Windows, X64, gpu]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install deps
+
+      - name: Set up Python environment
+        shell: powershell
         run: |
           python -m venv .venv
-          . .venv/bin/activate
-          pip install -r requirements.txt -q
-      - name: Build CUDA kernels
+          .\.venv\Scripts\Activate.ps1
+          pip install -U pip
+          pip install -r requirements.txt pytest
+
+      - name: Verify GPU
+        shell: powershell
         run: |
-          . .venv/bin/activate
-          mkdir -p build && cd build
-          cmake ../src
-          cmake --build .
-      - name: Run tests (GPU)
+          & nvidia-smi || throw "No GPU detected"
+
+      - name: Build GPU code
+        shell: powershell
         run: |
-          . .venv/bin/activate
-          pytest -q
+          .\.venv\Scripts\Activate.ps1
+          $ErrorActionPreference = "Stop"
+          # Ensure Visual Studio environment variables are loaded
+          Import-Module "$Env:VSINSTALLDIR\VC\Auxiliary\Build\vcvars64.ps1"
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DBUILD_GPU=ON
+          cmake --build build --config Release
+
+      - name: Run GPU tests
+        shell: powershell
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pytest -q -k "gpu or cuda" --maxfail=1 --disable-warnings
