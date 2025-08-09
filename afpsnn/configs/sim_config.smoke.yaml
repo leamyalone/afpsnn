@@ -1,0 +1,14 @@
+# AFPSNN SMOKE SIM CONFIG (fast, CPU-friendly)
+sim:
+  seconds: 6                    # very short run
+  dt_bucket_s: 0.002            # must match features.router.dt_bucket_s
+  nbuckets: 32                  # smaller ring for smoke
+  deterministic: true
+  seed: 0
+  logging:
+    tick_interval_steps: 10
+    snapshot_history_s: 2.0
+  guards:
+    max_spill_events: 100       # lenient for smoke
+    max_p95_bucket_occupancy: 0.85
+    enforce_kernel_order: true

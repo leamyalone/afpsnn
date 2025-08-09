@@ -1,0 +1,27 @@
+name: GPU Tests
+on:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  gpu-tests:
+    runs-on: [self-hosted, gpu, linux]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          pip install -r requirements.txt -q
+      - name: Build CUDA kernels
+        run: |
+          . .venv/bin/activate
+          mkdir -p build && cd build
+          cmake ../src
+          cmake --build .
+      - name: Run tests (GPU)
+        run: |
+          . .venv/bin/activate
+          pytest -q
