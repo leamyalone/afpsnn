@@ -26,6 +26,11 @@ def test_phase_bin_invalid_bins():
         phase_bin(0.0, 0)
 
 
+def test_phase_bin_non_integer_bins():
+    with pytest.raises(TypeError):
+        phase_bin(0.0, 2.5)
+
+
 def test_log_spaced_frequencies_values():
     freqs = log_spaced_frequencies(1.0, 1000.0, 4)
     expected = np.array([1.0, 10.0, 100.0, 1000.0])
