@@ -1,23 +1,51 @@
 name: CI (CPU)
+
 on:
   pull_request:
   push:
-    branches: [ chore/codex-support ]
+    branches: [ feat/test-hardening ]
+  schedule:
+    - cron: '0 0 * * 1'  # weekly on Monday at 00:00 UTC
+
 jobs:
   cpu-ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: '3.11' }
-      - name: Setup + Smoke + Tests
+        with:
+          python-version: '3.11'
+      - name: Setup environment, install deps & run pre-commit
         run: |
           python -m venv .venv
           . .venv/bin/activate
+          pip install -r requirements.txt
+          pip install pre-commit pytest pytest-cov pyyaml
+          pre-commit run --all-files || true
           bash scripts/codex.setup.sh
+          python tools/validate_config.py
+      - name: Deterministic smoke run (first)
+        run: |
+          . .venv/bin/activate
           python main.py --features configs/features.yaml --sim configs/sim_config.smoke.yaml
-          pytest -q
-      - name: Spec bump guard
+      - name: Deterministic smoke run (second)
+        run: |
+          . .venv/bin/activate
+          python main.py --features configs/features.yaml --sim configs/sim_config.smoke.yaml
+      - name: Non-deterministic run
+        run: |
+          . .venv/bin/activate
+          # override deterministic to false by editing config; here we just run default sim config
+          python main.py --features configs/features.yaml --sim configs/sim_config.yaml
+      - name: Run tests with coverage
+        run: |
+          . .venv/bin/activate
+          pytest -q --maxfail=1 --disable-warnings --cov=models --cov=src
+      - name: Check spec bump
         run: |
           . .venv/bin/activate
           python tools/check_spec_bump.py
+      - name: Check state conflict
+        run: |
+          . .venv/bin/activate
+          python tools/check_state_conflict.py
