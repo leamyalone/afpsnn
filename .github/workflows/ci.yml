@@ -20,14 +20,24 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Setup environment and install deps
+      - name: Setup environment and install deps (robust pip bootstrap)
+        env:
+          PIP_DISABLE_PIP_VERSION_CHECK: '1'
         run: |
           python -m venv .venv
           . .venv/bin/activate
           python -V
-          pip install -U pip
-          pip install -r requirements.txt
-          pip install pre-commit pytest pytest-cov pyyaml mypy ruff
+
+          # Fresh pip to avoid seeded-pip vendor bug (rich.box unpack error)
+          (curl -sS https://bootstrap.pypa.io/get-pip.py -o get-pip.py) || \
+          (wget -q https://bootstrap.pypa.io/get-pip.py -O get-pip.py)
+          python get-pip.py pip==24.2
+          python -m pip --version
+
+          # Usual setup
+          python -m pip install -U setuptools wheel
+          python -m pip install -r requirements.txt
+          python -m pip install pre-commit pytest pytest-cov pyyaml mypy ruff
 
       - name: Pre-commit (lint/format)
         run: |
