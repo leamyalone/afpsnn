@@ -34,13 +34,19 @@ jobs:
           python get-pip.py pip==24.2
           python -m pip --version
 
-          # Usual setup (+ GUI deps)
+          # Usual setup (base deps only)
           python -m pip install -U setuptools wheel
           python -m pip install -r requirements.txt
           python -m pip install pre-commit pytest pytest-cov pyyaml mypy ruff
+
+      - name: Install GUI deps (Qt/pyqtgraph) if GUI smoke exists
+        if: ${{ hashFiles('scripts/gui_smoke_qt.py') != '' }}
+        run: |
+          . .venv/bin/activate
           python -m pip install PySide6 pyqtgraph
 
-      - name: Install Xvfb for Qt offscreen
+      - name: Install Xvfb for Qt offscreen (only when needed)
+        if: ${{ hashFiles('scripts/gui_smoke_qt.py') != '' }}
         run: |
           sudo apt-get update
           sudo apt-get install -y xvfb
@@ -114,6 +120,7 @@ jobs:
           pytest -q --maxfail=1 --disable-warnings --cov=models --cov=src
 
       - name: GUI smoke (Qt) — export PNG with pyqtgraph
+        if: ${{ hashFiles('scripts/gui_smoke_qt.py') != '' }}
         env:
           QT_QPA_PLATFORM: offscreen
         run: |
@@ -121,7 +128,7 @@ jobs:
           xvfb-run -a python scripts/gui_smoke_qt.py
 
       - name: Upload GUI smoke artifact
-        if: always()
+        if: ${{ always() && hashFiles('scripts/gui_smoke_qt.py') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: gui-smoke
