@@ -34,10 +34,16 @@ jobs:
           python get-pip.py pip==24.2
           python -m pip --version
 
-          # Usual setup
+          # Usual setup (+ GUI deps)
           python -m pip install -U setuptools wheel
           python -m pip install -r requirements.txt
           python -m pip install pre-commit pytest pytest-cov pyyaml mypy ruff
+          python -m pip install PySide6 pyqtgraph
+
+      - name: Install Xvfb for Qt offscreen
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
 
       - name: Pre-commit (lint/format)
         run: |
@@ -106,6 +112,21 @@ jobs:
         run: |
           . .venv/bin/activate
           pytest -q --maxfail=1 --disable-warnings --cov=models --cov=src
+
+      - name: GUI smoke (Qt) — export PNG with pyqtgraph
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          . .venv/bin/activate
+          xvfb-run -a python scripts/gui_smoke_qt.py
+
+      - name: Upload GUI smoke artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-smoke
+          path: artifacts/gui_smoke/**
+          if-no-files-found: ignore
 
       - name: Check state conflict
         run: |
