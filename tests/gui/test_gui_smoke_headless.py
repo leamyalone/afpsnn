@@ -1,7 +1,8 @@
 from __future__ import annotations
-import os
-from pathlib import Path
+
 import importlib
+from pathlib import Path
+
 
 def test_gui_smoke_writes_png(tmp_path: Path):
     # Run the smoke script and assert we got a PNG with bytes
