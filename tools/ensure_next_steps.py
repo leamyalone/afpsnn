@@ -1,23 +1,37 @@
 #!/usr/bin/env python3
 
 import argparse
-import yaml
 import os
-import datetime
+
+import yaml
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Ensure next_steps list is not empty and replenish from backlog.")
-    parser.add_argument("--ci", action="store_true", help="Validate only; fail if next_steps empty or invalid YAML.")
-    parser.add_argument("--agent", action="store_true", help="Replenish next_steps from backlog until at least length 2.")
+    parser = argparse.ArgumentParser(
+        description="Ensure next_steps list is not empty and replenish from backlog."
+    )
+    parser.add_argument(
+        "--ci",
+        action="store_true",
+        help="Validate only; fail if next_steps empty or invalid YAML.",
+    )
+    parser.add_argument(
+        "--agent",
+        action="store_true",
+        help="Replenish next_steps from backlog until at least length 2.",
+    )
     args = parser.parse_args()
 
     # Determine path to STATE.md relative to this script
     # STATE.md resides two directories up from this file (project root)
-    state_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "STATE.md")
+    state_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "STATE.md"
+    )
 
     if not os.path.exists(state_path):
-        raise SystemExit("STATE.md not found at expected location: {}".format(state_path))
+        raise SystemExit(
+            "STATE.md not found at expected location: {}".format(state_path)
+        )
 
     with open(state_path, "r", encoding="utf-8") as f:
         content = f.read()
@@ -46,7 +60,9 @@ def main():
     if args.ci:
         # Validation mode: ensure next_steps is non-empty
         if len(next_steps) == 0:
-            raise SystemExit("STATE.md next_steps is empty; please add tasks before merging.")
+            raise SystemExit(
+                "STATE.md next_steps is empty; please add tasks before merging."
+            )
         # Optionally check YAML version fields etc.
         return
 

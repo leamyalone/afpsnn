@@ -1,1 +1,1 @@
-print('forex stub')
+print("forex stub")

@@ -32,7 +32,9 @@ if not m:
 version = m.group(1)
 
 if api_touch and version == "0.3.5":
-    print("API/kernels changed but MANIFEST still at v0.3.5 — require v0.3.6 + SPEC AMENDMENT in PR.")
+    print(
+        "API/kernels changed but MANIFEST still at v0.3.5 — require v0.3.6 + SPEC AMENDMENT in PR."
+    )
     sys.exit(2)
 
 print("Spec bump guard OK.")

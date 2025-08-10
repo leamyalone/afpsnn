@@ -1,1 +1,1 @@
-print('bench stub')
+print("bench stub")

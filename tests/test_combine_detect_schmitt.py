@@ -15,7 +15,15 @@ def test_combine_detect_spike():
     w_s = 0.0
     lambda_F = 0.0
     M, Phi, T_eff, spike_F, spike_P = combine_detect_np(
-        X_f, X_s, T_base, T_min, lambda_F, S_F,
-        T_base_scale, lambda_scale, w_f, w_s,
+        X_f,
+        X_s,
+        T_base,
+        T_min,
+        lambda_F,
+        S_F,
+        T_base_scale,
+        lambda_scale,
+        w_f,
+        w_s,
     )
     assert spike_F is True

@@ -59,7 +59,9 @@ def collect_includes_cpp(path: str) -> List[str]:
     return includes
 
 
-def build_impact(task: str, files: List[str], symbols: List[str], repo_root: str) -> dict:
+def build_impact(
+    task: str, files: List[str], symbols: List[str], repo_root: str
+) -> dict:
     """Compute a simple impact map for the given files and symbols."""
     impacted: Set[str] = set()
     for rel in files:
@@ -94,21 +96,36 @@ def build_impact(task: str, files: List[str], symbols: List[str], repo_root: str
         "files": sorted(impacted),
         "symbols": symbols,
         # Manifest sections can be filled by higher-level tools
-        "manifest_sections": []
+        "manifest_sections": [],
     }
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Compute a simple impact map for a proposed task.")
+    parser = argparse.ArgumentParser(
+        description="Compute a simple impact map for a proposed task."
+    )
     parser.add_argument("--task", type=str, default="", help="Task description")
-    parser.add_argument("--files", type=str, help="Comma-separated list of touched files")
-    parser.add_argument("--symbols", type=str, default="", help="Comma-separated list of touched symbols")
-    parser.add_argument("--repo-root", type=str, default=".", help="Root of the repository")
-    parser.add_argument("-o", "--output", type=str, default=None, help="Output JSON file path")
+    parser.add_argument(
+        "--files", type=str, help="Comma-separated list of touched files"
+    )
+    parser.add_argument(
+        "--symbols",
+        type=str,
+        default="",
+        help="Comma-separated list of touched symbols",
+    )
+    parser.add_argument(
+        "--repo-root", type=str, default=".", help="Root of the repository"
+    )
+    parser.add_argument(
+        "-o", "--output", type=str, default=None, help="Output JSON file path"
+    )
     args = parser.parse_args()
 
     touched_files = [f.strip() for f in args.files.split(",")] if args.files else []
-    touched_symbols = [s.strip() for s in args.symbols.split(",")] if args.symbols else []
+    touched_symbols = (
+        [s.strip() for s in args.symbols.split(",")] if args.symbols else []
+    )
 
     impact = build_impact(args.task, touched_files, touched_symbols, args.repo_root)
 

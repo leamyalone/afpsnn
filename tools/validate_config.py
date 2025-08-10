@@ -6,7 +6,7 @@ import yaml
 
 def validate_yaml(path: pathlib.Path) -> bool:
     """Load a YAML file to ensure it is syntactically valid."""
-    with path.open('r') as f:
+    with path.open("r") as f:
         yaml.safe_load(f)
     return True
 

@@ -9,5 +9,5 @@ import pytest
 def _global_seeds():
     random.seed(0)
     np.random.seed(0)
-    os.environ.setdefault("AFPSNN_SEED","0")
+    os.environ.setdefault("AFPSNN_SEED", "0")
     yield

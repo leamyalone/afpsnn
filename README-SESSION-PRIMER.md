@@ -252,4 +252,3 @@ python tools/build_context_bundle.py --state STATE.md --impact impact.json > kic
 ```
 
 Paste the contents of `kickoff.txt` into the next session's prompt to give the model only the relevant MANIFEST sections, API snippets, module summaries and linked tests for the current task. This avoids loading the entire codebase into context while ensuring all required details are present.
-
