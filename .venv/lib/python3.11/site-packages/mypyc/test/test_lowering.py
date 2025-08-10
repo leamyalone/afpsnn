@@ -36,7 +36,9 @@ class TestLowering(MypycDataSuite):
         if options is None:
             # Skipped test case
             return
-        with use_custom_builtins(os.path.join(self.data_prefix, ICODE_GEN_BUILTINS), testcase):
+        with use_custom_builtins(
+            os.path.join(self.data_prefix, ICODE_GEN_BUILTINS), testcase
+        ):
             expected_output = remove_comment_lines(testcase.output)
             expected_output = replace_word_size(expected_output)
             try:
@@ -46,7 +48,9 @@ class TestLowering(MypycDataSuite):
             else:
                 actual = []
                 for fn in ir:
-                    if fn.name == TOP_LEVEL_NAME and not testcase.name.endswith("_toplevel"):
+                    if fn.name == TOP_LEVEL_NAME and not testcase.name.endswith(
+                        "_toplevel"
+                    ):
                         continue
                     options = CompilerOptions()
                     # Lowering happens after exception handling and ref count opcodes have
@@ -58,4 +62,6 @@ class TestLowering(MypycDataSuite):
                     do_flag_elimination(fn, options)
                     actual.extend(format_func(fn))
 
-            assert_test_output(testcase, actual, "Invalid source code output", expected_output)
+            assert_test_output(
+                testcase, actual, "Invalid source code output", expected_output
+            )
