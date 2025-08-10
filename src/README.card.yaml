@@ -1,0 +1,16 @@
+component: cuda_kernels_and_host
+public_api:
+  - afpsnn_host module via pybind11 exposes GPU kernels
+contracts:
+  - "GPU kernels must follow the order defined in MANIFEST §11"
+  - "No router drops; implement spill-forward as described in MANIFEST §4.6"
+  - "Maintain deterministic sort order and stable segmented reductions"
+deps:
+  - kernels.cu
+  - host.cpp
+  - CMakeLists.txt
+  - models/core/router.py
+tests:
+  - tests/test_kernel_order.py
+  - tests/test_router_spill_no_drop.py
+  - tests/test_plasticity_sweeps.py
