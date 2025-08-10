@@ -1,0 +1,17 @@
+component: core modules
+public_api:
+  - wrap_phase(phase: float) -> float
+  - unwrap_phase(phase: float) -> float
+  - phase_bin(phase: float, bins: int) -> int
+  - log_spaced_frequencies(fmin: float, fmax: float, bins: int) -> list[float]
+contracts:
+  - "Must respect AFPSNN manifest (§11 kernel order, §4.6 spill-forward) and never drop packets"
+  - "Maintain units (seconds, Hz, radians); no Top-K gating"
+deps:
+  - models/core/router.py
+  - models/core/scheduler.py
+  - src/kernels.cu
+tests:
+  - tests/test_phase_wrap.py
+  - tests/test_phase_bin.py
+  - tests/test_kernel_order.py
