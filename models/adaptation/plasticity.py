@@ -1,1 +1,2 @@
-class Plasticity: pass
+class Plasticity:
+    pass

@@ -1,5 +1,3 @@
-import sys
-
 def main() -> None:
     """Simple state conflict checker.
 

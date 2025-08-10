@@ -1,1 +1,2 @@
-class Metrics: pass
+class Metrics:
+    pass

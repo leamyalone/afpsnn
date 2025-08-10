@@ -1,0 +1,15 @@
+component: cuda_kernels_and_host
+public_api:
+  - "afpsnn_host (pybind11) exposes GPU kernels to Python"
+contracts:
+  - "Kernels must follow MANIFEST §11 ordering"
+  - "Router must spill-forward; no drops (MANIFEST §4.6)"
+  - "Deterministic behavior for seed=0 where specified"
+deps:
+  - src/kernels.cu
+  - src/host.cpp
+  - CMakeLists.txt
+tests:
+  - "pytest -k 'gpu or cuda' (see gpu-tests workflow)"
+notes:
+  - "High-level summary card to help context bundling tools."

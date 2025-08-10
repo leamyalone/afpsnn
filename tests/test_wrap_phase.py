@@ -1,6 +1,7 @@
-import numpy as np
 import sys
 from pathlib import Path
+
+import numpy as np
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
@@ -15,4 +16,3 @@ def test_wrap_phase_scalar_and_array():
     expected = np.array([0.0, -np.pi, -np.pi, -np.pi, -np.pi, 0.1])
 
     np.testing.assert_allclose(wrap_phase(angles), expected)
-

@@ -1,0 +1,45 @@
+name: Fast check
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: write
+
+jobs:
+  fast-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Setup environment and install deps
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          pip install -r requirements.txt
+          pip install pre-commit pytest pytest-cov pyyaml
+          bash scripts/codex.setup.sh
+          python tools/validate_config.py
+      - name: Pre-commit (lint/format)
+        run: |
+          . .venv/bin/activate
+          pre-commit run --all-files || true
+      - name: Auto-commit pre-commit changes (if any)
+        run: |
+          . .venv/bin/activate
+          git status --porcelain
+          if git status --porcelain | grep .; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore(pre-commit): auto-fix formatting"
+            git push
+            exit 1
+          fi
+      - name: Run tests
+        run: |
+          . .venv/bin/activate
+          pytest -q

@@ -1,7 +1,7 @@
 """Kernel order tests based on MANIFEST §11."""
 
-from pathlib import Path
 import re
+from pathlib import Path
 
 
 def _manifest_kernel_order():
