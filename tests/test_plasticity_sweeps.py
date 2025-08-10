@@ -35,4 +35,6 @@ def test_plasticity_outputs_finite_and_bounded() -> None:
     for f in (delta_g, delta_d):
         ys = [float(f(float(x), 0.0)) for x in xs]
         assert all(math.isfinite(y) for y in ys), "No NaN/inf in sweep"
-        assert min(ys) >= -1.5 and max(ys) <= 1.5  # loose bound; tune if spec states exact limits
+        assert (
+            min(ys) >= -1.5 and max(ys) <= 1.5
+        )  # loose bound; tune if spec states exact limits

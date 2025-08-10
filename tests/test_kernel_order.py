@@ -61,5 +61,7 @@ def test_kernel_order_matches_manifest_and_runtime() -> None:
     runtime = _runtime_kernel_order()
 
     assert spec == expected, f"Spec §11 changed? \nSpec: {spec}\nExpected: {expected}"
-    assert runtime == expected, f"Runtime kernel order mismatch.\nRuntime: {runtime}\nExpected: {expected}"
+    assert (
+        runtime == expected
+    ), f"Runtime kernel order mismatch.\nRuntime: {runtime}\nExpected: {expected}"
     assert len(runtime) == len(set(runtime)), "Runtime kernel order has duplicates."
