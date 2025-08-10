@@ -1,0 +1,22 @@
+# Work graph for AFPSNN tasks
+milestones:
+  - id: sprint-01
+    tasks:
+      - id: repo_core_buffers
+        requires: []
+      - id: router_buckets
+        requires: [repo_core_buffers]
+      - id: integrate_decay
+        requires: [router_buckets]
+      - id: history_multi_tau
+        requires: [integrate_decay]
+      - id: pacer_scales_combine_detect
+        requires: [history_multi_tau]
+      - id: refractory_schmitt_emit
+        requires: [pacer_scales_combine_detect]
+      - id: edge_masks_router_transform
+        requires: [refractory_schmitt_emit]
+      - id: inhibitory_scaling
+        requires: [edge_masks_router_transform]
+      - id: stdp_delay_plasticity
+        requires: [inhibitory_scaling]
