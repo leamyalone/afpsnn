@@ -10,8 +10,8 @@ last_session:
   pr: null
 
 next_steps:
-  - "Add PyQtGraph GUI smoke: scripts/gui_smoke_qt.py and tests/gui/test_gui_smoke_qt.py; ensure PySide6/pyqtgraph in requirements.txt; PNG artifact path artifacts/gui_smoke/."
   - "Replace placeholders with real assertions in: tests/test_router_spill_no_drop.py, tests/test_kernel_order.py, tests/test_plasticity_sweeps.py (create missing shims minimally)."
+  - "Add PyQtGraph GUI smoke: scripts/gui_smoke_qt.py and tests/gui/test_gui_smoke_qt.py; ensure PySide6/pyqtgraph in requirements.txt; PNG artifact path artifacts/gui_smoke/."
 
 done: []
 
