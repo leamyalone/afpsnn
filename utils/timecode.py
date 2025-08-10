@@ -1,1 +1,2 @@
-class Timecode: pass
+class Timecode:
+    pass

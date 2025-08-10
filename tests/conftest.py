@@ -1,5 +1,9 @@
-import os, random, numpy as np
+import os
+import random
+
+import numpy as np
 import pytest
+
 
 @pytest.fixture(autouse=True)
 def _global_seeds():

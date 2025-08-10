@@ -1,0 +1,17 @@
+component: core
+public_api:
+  - "wrap_phase(phase: float) -> float"
+  - "unwrap_phase(phase: float) -> float"
+  - "phase_bin(phase: float, bins: int) -> int"
+  - "log_spaced_frequencies(fmin: float, fmax: float, bins: int) -> list[float]"
+contracts:
+  - "Must respect AFPSNN MANIFEST (§11 kernel order, §4.6 spill-forward); never drop packets"
+  - "Maintain units (seconds, Hz, radians); binning lower-inclusive; wrap to [-π, π)"
+deps:
+  - models/core/signal.py
+  - utils/math.py
+tests:
+  - tests/test_wrap_phase.py
+  - tests/test_bins_and_wrap.py
+notes:
+  - "This card is descriptive, not normative; MANIFEST and API-INTERFACES are the source of truth."

@@ -1,5 +1,8 @@
 name: CI (CPU)
 
+permissions:
+  contents: write
+
 on:
   pull_request:
   push:
@@ -15,15 +18,33 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Setup environment, install deps & run pre-commit
+      - name: Setup environment and install deps
         run: |
           python -m venv .venv
           . .venv/bin/activate
           pip install -r requirements.txt
           pip install pre-commit pytest pytest-cov pyyaml
-          pre-commit run --all-files || true
           bash scripts/codex.setup.sh
           python tools/validate_config.py
+
+      - name: Pre-commit (lint/format)
+        run: |
+          . .venv/bin/activate
+          pre-commit run --all-files || true
+
+      - name: Auto-commit pre-commit changes (if any)
+        run: |
+          . .venv/bin/activate
+          git status --porcelain
+          if git status --porcelain | grep .; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore(pre-commit): auto-fix formatting"
+            git push
+            # cause this run to stop so a clean run re-triggers
+            exit 1
+          fi
       - name: Deterministic smoke run (first)
         run: |
           . .venv/bin/activate

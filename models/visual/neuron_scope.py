@@ -1,1 +1,2 @@
-class NeuronScope: pass
+class NeuronScope:
+    pass

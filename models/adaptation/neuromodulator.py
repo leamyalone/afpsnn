@@ -1,1 +1,2 @@
-class Neuromodulator: pass
+class Neuromodulator:
+    pass

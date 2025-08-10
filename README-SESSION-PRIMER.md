@@ -1,6 +1,6 @@
-[> **Start-of-session ritual**  
-> 1) Read `STATE.md` and check out `current_branch`.  
-> 2) CPU-only, deterministic=true, seed=0.  
+[> **Start-of-session ritual**
+> 1) Read `STATE.md` and check out `current_branch`.
+> 2) CPU-only, deterministic=true, seed=0.
 > 3) Do exactly one `next_steps` item, run smoke + tests, update PR and `STATE.md`.
 
 README-SESSION-PRIMER.md](https://github.com/user-attachments/files/21697651/README-SESSION-PRIMER.md)

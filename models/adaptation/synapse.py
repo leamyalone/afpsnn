@@ -1,1 +1,2 @@
-class Synapse: pass
+class Synapse:
+    pass

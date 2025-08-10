@@ -1,1 +1,2 @@
-class NeuronBuffers: pass
+class NeuronBuffers:
+    pass
