@@ -1,7 +1,19 @@
 import numpy as np
 
 
-def combine_detect_np(X_f, X_s, T_base, T_min, lambda_F, S_F, T_base_scale, lambda_scale, w_f, w_s, alpha_b=None):
+def combine_detect_np(
+    X_f,
+    X_s,
+    T_base,
+    T_min,
+    lambda_F,
+    S_F,
+    T_base_scale,
+    lambda_scale,
+    w_f,
+    w_s,
+    alpha_b=None,
+):
     """
     Simplified CPU reference for combine and detect.
     X_f, X_s: np.ndarray of shape (B,) or (N,B).
@@ -15,7 +27,7 @@ def combine_detect_np(X_f, X_s, T_base, T_min, lambda_F, S_F, T_base_scale, lamb
     M = np.abs(X)
     Phi = np.angle(X)
     # Sensitivity slice
-    if hasattr(S_F, 'ndim') and S_F.ndim == 3:
+    if hasattr(S_F, "ndim") and S_F.ndim == 3:
         S = S_F[..., 0]
     else:
         S = S_F
@@ -34,4 +46,12 @@ def router_sort_key(atom):
     Return a tuple key for sorting router atoms deterministically.
     Accepts dict with keys: dst, bin, src, t_emit_s, type, toggle_dir, seq.
     """
-    return (atom['dst'], atom['bin'], atom['src'], atom['t_emit_s'], atom['type'], atom['toggle_dir'], atom['seq'])
+    return (
+        atom["dst"],
+        atom["bin"],
+        atom["src"],
+        atom["t_emit_s"],
+        atom["type"],
+        atom["toggle_dir"],
+        atom["seq"],
+    )

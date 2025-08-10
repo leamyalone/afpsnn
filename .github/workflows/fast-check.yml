@@ -1,45 +1,95 @@
-name: Fast check
-
-on:
-  pull_request:
-  push:
+name: Fast Check
 
 permissions:
   contents: write
 
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
 jobs:
-  fast-check:
-    runs-on: ubuntu-latest
+  fast:
+    runs-on: [self-hosted, Windows, X64]
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Setup environment and install deps
+        shell: powershell
         run: |
           python -m venv .venv
-          . .venv/bin/activate
-          pip install -r requirements.txt
-          pip install pre-commit pytest pytest-cov pyyaml
-          bash scripts/codex.setup.sh
-          python tools/validate_config.py
+          .\.venv\Scripts\Activate.ps1
+          python -V
+          python -m pip install -U pip
+          python -m pip install -r requirements.txt
+          python -m pip install pre-commit pytest pytest-cov pyyaml mypy ruff
+
       - name: Pre-commit (lint/format)
+        shell: powershell
         run: |
-          . .venv/bin/activate
-          pre-commit run --all-files || true
+          .\.venv\Scripts\Activate.ps1
+          .\.venv\Scripts\pre-commit.exe run --all-files
+          if ($LASTEXITCODE -ne 0) { Write-Host "pre-commit applied fixes"; exit 0 }
+
       - name: Auto-commit pre-commit changes (if any)
+        if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+        shell: powershell
         run: |
-          . .venv/bin/activate
-          git status --porcelain
-          if git status --porcelain | grep .; then
+          $changes = git status --porcelain
+          if ($changes) {
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add -A
             git commit -m "chore(pre-commit): auto-fix formatting"
             git push
             exit 1
-          fi
-      - name: Run tests
+          }
+
+      - name: Validate config (YAML syntax)
+        shell: powershell
         run: |
-          . .venv/bin/activate
-          pytest -q
+          .\.venv\Scripts\Activate.ps1
+          if (Test-Path .\tools\validate_config.py) { python .\tools\validate_config.py }
+
+      - name: Validate STATE next_steps (CI)
+        shell: powershell
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          python .\tools\ensure_next_steps.py --ci
+
+      - name: Enforce tests accompany code changes
+        env:
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+        shell: powershell
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          python .\tools\check_tests_required.py
+
+      - name: Ensure PR body cites the spec
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        shell: powershell
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          python .\tools\critic_pr_body_refs.py
+
+      - name: Smoke run
+        shell: powershell
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          if (Test-Path .\configs\sim_config.smoke.yaml) {
+            python .\main.py --features .\configs\features.yaml --sim .\configs\sim_config.smoke.yaml
+          } else {
+            Write-Host "No smoke config; skipping"
+          }
+
+      - name: Pytest (fast subset)
+        shell: powershell
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          pytest -q -k "wrap or bin or kernel_order" --maxfail=1 --disable-warnings

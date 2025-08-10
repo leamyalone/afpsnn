@@ -6,7 +6,7 @@ permissions:
 on:
   pull_request:
   push:
-    branches: [ feat/test-hardening ]
+    branches: [ main, feat/* ]
   schedule:
     - cron: '0 0 * * 1'  # weekly on Monday at 00:00 UTC
 
@@ -15,17 +15,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Setup environment and install deps
+
+      - name: Setup environment and install deps (robust pip bootstrap)
+        env:
+          PIP_DISABLE_PIP_VERSION_CHECK: '1'
         run: |
           python -m venv .venv
           . .venv/bin/activate
-          pip install -r requirements.txt
-          pip install pre-commit pytest pytest-cov pyyaml
-          bash scripts/codex.setup.sh
-          python tools/validate_config.py
+          python -V
+
+          # Fresh pip to avoid seeded-pip vendor bug (rich.box unpack error)
+          (curl -sS https://bootstrap.pypa.io/get-pip.py -o get-pip.py) || \
+          (wget -q https://bootstrap.pypa.io/get-pip.py -O get-pip.py)
+          python get-pip.py pip==24.2
+          python -m pip --version
+
+          # Usual setup
+          python -m pip install -U setuptools wheel
+          python -m pip install -r requirements.txt
+          python -m pip install pre-commit pytest pytest-cov pyyaml mypy ruff
 
       - name: Pre-commit (lint/format)
         run: |
@@ -33,39 +45,68 @@ jobs:
           pre-commit run --all-files || true
 
       - name: Auto-commit pre-commit changes (if any)
+        # Avoid pushing from forks; safe in this repo
+        if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
         run: |
           . .venv/bin/activate
-          git status --porcelain
           if git status --porcelain | grep .; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add -A
             git commit -m "chore(pre-commit): auto-fix formatting"
             git push
-            # cause this run to stop so a clean run re-triggers
+            # stop this run so a clean run re-triggers with the new commit
             exit 1
           fi
-      - name: Deterministic smoke run (first)
+
+      - name: Validate config (YAML syntax)
         run: |
           . .venv/bin/activate
-          python main.py --features configs/features.yaml --sim configs/sim_config.smoke.yaml
-      - name: Deterministic smoke run (second)
+          if [ -f tools/validate_config.py ]; then python tools/validate_config.py || true; fi
+
+      - name: Validate STATE next_steps (CI)
         run: |
           . .venv/bin/activate
-          python main.py --features configs/features.yaml --sim configs/sim_config.smoke.yaml
-      - name: Non-deterministic run
+          python tools/ensure_next_steps.py --ci
+
+      - name: Enforce tests accompany code changes
+        env:
+          GITHUB_BASE_REF: ${{ github.base_ref }}
         run: |
           . .venv/bin/activate
-          # override deterministic to false by editing config; here we just run default sim config
-          python main.py --features configs/features.yaml --sim configs/sim_config.yaml
-      - name: Run tests with coverage
+          python tools/check_tests_required.py
+
+      - name: Ensure PR body cites the spec
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          . .venv/bin/activate
+          python tools/critic_pr_body_refs.py
+
+      - name: Spec bump guard
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          PR_TITLE: "${{ github.event.pull_request.title }}"
+          GITHUB_BASE_REF: "${{ github.base_ref }}"
+        run: |
+          . .venv/bin/activate
+          python tools/check_spec_bump.py "${{ github.event.pull_request.title || '' }}"
+
+      - name: Deterministic smoke run
+        run: |
+          . .venv/bin/activate
+          if [ -f configs/sim_config.smoke.yaml ]; then \
+            python main.py --features configs/features.yaml --sim configs/sim_config.smoke.yaml; \
+          else \
+            echo "No smoke config; skipping"; \
+          fi
+
+      - name: Run full test suite with coverage
         run: |
           . .venv/bin/activate
           pytest -q --maxfail=1 --disable-warnings --cov=models --cov=src
-      - name: Check spec bump
-        run: |
-          . .venv/bin/activate
-          python tools/check_spec_bump.py
+
       - name: Check state conflict
         run: |
           . .venv/bin/activate

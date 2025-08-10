@@ -1,1 +1,1 @@
-print('multimodal stub')
+print("multimodal stub")

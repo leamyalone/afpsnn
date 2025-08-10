@@ -221,3 +221,34 @@ Next recommended task(s): [ordered list]
 Open questions/spec gaps: [if any]
 ```
 End of primer — acknowledge per §1 and proceed with your plan.
+
+### STATE maintenance (mandatory)
+
+After completing ONE `next_steps` item in `STATE.md`:
+
+1. Append to `STATE.md.done`:
+   - `at`: ISO timestamp (America/New_York)
+   - `summary`: one-liner of the change
+   - optional `pr`: integer PR number if a PR was created or updated
+2. Remove the item from `STATE.md.next_steps`.
+3. If `next_steps` has fewer than 2 items, run:
+
+```bash
+python tools/ensure_next_steps.py --agent
+```
+
+This will refill `next_steps` from `STATE.md.backlog`.
+
+4. Commit the updated `STATE.md` in the same PR.
+
+### Context bundling (as the repo grows)
+
+When the codebase grows beyond a single session’s context window, use the context-bundling tools to assemble a small, task-specific context:
+
+```bash
+python tools/update_summaries.py
+python tools/impact_map.py --task "<short summary>" --files <comma-separated files> > impact.json
+python tools/build_context_bundle.py --state STATE.md --impact impact.json > kickoff.txt
+```
+
+Paste the contents of `kickoff.txt` into the next session's prompt to give the model only the relevant MANIFEST sections, API snippets, module summaries and linked tests for the current task. This avoids loading the entire codebase into context while ensuring all required details are present.

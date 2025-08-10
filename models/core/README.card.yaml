@@ -12,6 +12,9 @@ deps:
   - utils/math.py
 tests:
   - tests/test_wrap_phase.py
+  - tests/test_unwrap_phase.py
   - tests/test_bins_and_wrap.py
+  - tests/test_binning.py
+  - tests/test_kernel_order.py
 notes:
   - "This card is descriptive, not normative; MANIFEST and API-INTERFACES are the source of truth."

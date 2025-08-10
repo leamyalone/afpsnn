@@ -10,6 +10,8 @@ deps:
   - src/host.cpp
   - CMakeLists.txt
 tests:
-  - "pytest -k 'gpu or cuda' (see gpu-tests workflow)"
+  - tests/test_kernel_order.py
+  - tests/test_router_drain_determinism.py
+  - tests/test_plasticity_sweeps.py
 notes:
-  - "High-level summary card to help context bundling tools."
+  - "High-level summary card to help context bundling tools; MANIFEST and API-INTERFACES remain authoritative."
