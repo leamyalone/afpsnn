@@ -1,1 +1,2 @@
-class NetworkMap: pass
+class NetworkMap:
+    pass

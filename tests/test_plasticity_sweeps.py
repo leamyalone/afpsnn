@@ -1,6 +1,7 @@
 """Plasticity sweeps verifying phase relationships (§5.1–§5.2)."""
 
 import numpy as np
+
 # Phase-based plasticity sign checks (§5.1–§5.2)
 
 

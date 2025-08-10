@@ -1,6 +1,7 @@
-import sys
-import yaml
 import pathlib
+import sys
+
+import yaml
 
 
 def validate_yaml(path: pathlib.Path) -> bool:
