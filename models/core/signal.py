@@ -1,6 +1,6 @@
 """Signal helpers for phase and frequency bins.
 
-Utilities here implement binning rules defined by ``AFPSNN-MANIFEST v0.3.5``.
+Utilities here implement binning rules defined by ``AFPSNN-MANIFEST v0.3.6``.
 They provide deterministic mappings between continuous values and discrete
 indices used throughout the simulator.
 """
@@ -29,6 +29,16 @@ def wrap_phase(x):
     wrapped = (arr + np.pi) % (2 * np.pi) - np.pi
     # Preserve scalar input type for convenience
     return wrapped.item() if np.isscalar(x) else wrapped
+
+
+def effective_phase(phi, inhibitory: bool):
+    """Return phase adjusted for inhibitory sources (π flip), wrapped to [-π, π).
+
+    See MANIFEST §4.2 / §6.
+    """
+    if inhibitory:
+        return wrap_phase(phi + np.pi)
+    return wrap_phase(phi)
 
 
 def unwrap_phase(x, discont=np.pi):
@@ -67,7 +77,7 @@ def phase_bin(phi, num_bins):
     """Map phase angle(s) to phase-bin indices.
 
     Implements the lower-inclusive, upper-exclusive rule from
-    ``AFPSNN-MANIFEST v0.3.5 §1.2``. Angles are wrapped to ``[-pi, pi)`` and
+    ``AFPSNN-MANIFEST v0.3.6 §1.2``. Angles are wrapped to ``[-pi, pi)`` and
     then assigned to ``num_bins`` uniform bins over that interval.
 
     Parameters
@@ -97,7 +107,7 @@ def phase_bin(phi, num_bins):
 def log_spaced_frequencies(f_min, f_max, bins):
     """Compute log-spaced frequency bin centres.
 
-    Follows ``AFPSNN-MANIFEST v0.3.5 §1.1`` which defines centres ``f_b`` over
+    Follows ``AFPSNN-MANIFEST v0.3.6 §1.1`` which defines centres ``f_b`` over
     ``[f_min, f_max]`` as::
 
         f_b = f_min * (f_max / f_min) ** (b / (B - 1))

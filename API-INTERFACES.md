@@ -1,4 +1,4 @@
-# AFPSNN API & Kernel Interfaces — v0.3.5 (normative)
+# AFPSNN API & Kernel Interfaces — v0.3.6 (normative)
 
 > **Read this after AFPSNN-MANIFEST.md §15 (Onboarding).** Do not change public signatures without bumping the MANIFEST (§17).
 
@@ -256,4 +256,4 @@ void step_tick(StepContext& ctx);
   `(dst, bin, src, t_emit_s, pkt_type, toggle_dir, seq)`.
 - Stochastic rounding for `delay_accum` uses seeded RNG; with `deterministic=true`, seed is fixed and advanced deterministically.
 
-**End of API-INTERFACES v0.3.5**
+**End of API-INTERFACES v0.3.6**

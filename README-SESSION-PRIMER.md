@@ -4,7 +4,7 @@
 > 3) Do exactly one `next_steps` item, run smoke + tests, update PR and `STATE.md`.
 
 README-SESSION-PRIMER.md](https://github.com/user-attachments/files/21697651/README-SESSION-PRIMER.md)
-# README-SESSION-PRIMER.md (v0.3.5)
+# README-SESSION-PRIMER.md (v0.3.6)
 
 Paste this entire file into a brand-new GPT chat at the start of any session that will touch this repo.
 Goal: make GPT follow the AFPSNN spec exactly, avoid ambiguity, and ship safe diffs + tests.
@@ -17,7 +17,7 @@ The repo contains AFPSNN, a spiking network with frequency/phase bins, Schmitt e
 Authority order:
 AFPSNN-MANIFEST.md (normative spec) → API-INTERFACES.md (ABI & shapes) → README-BOOTSTRAP.md (process) → configs/*.yaml (defaults).
 
-Current spec is v0.3.5. If you need to change shapes/units/algorithms, propose a spec bump (e.g., v0.3.6) with a short, explicit diff.
+Current spec is v0.3.6. If you need to change shapes/units/algorithms, propose a spec bump (e.g., v0.3.7) with a short, explicit diff.
 
 ---
 
@@ -27,8 +27,8 @@ Current spec is v0.3.5. If you need to change shapes/units/algorithms, propose a
 ACK — AFPSNN session init
 
 I have read:
-- AFPSNN-MANIFEST.md v0.3.5 (sections: §1 bins, §2 dynamics, §3 emission, §4 router, §5 plasticity, §6–§9 families/modulation/history, §11 kernel order, §12 ops metrics, §13 layout, §14 non-goals)
-- API-INTERFACES.md v0.3.5 (device shapes & kernel signatures)
+- AFPSNN-MANIFEST.md v0.3.6 (sections: §1 bins, §2 dynamics, §3 emission, §4 router, §5 plasticity, §6–§9 families/modulation/history, §11 kernel order, §12 ops metrics, §13 layout, §14 non-goals)
+- API-INTERFACES.md v0.3.6 (device shapes & kernel signatures)
 - README-BOOTSTRAP.md (build/run ritual)
 
 Intent for this session:
@@ -108,7 +108,7 @@ If you need to extend behavior (new neuron family, new metric, etc.), draft a SP
 - Impact: [shapes/ABI? yes/no]
 - Tests: [names]
 ```
-Do not code beyond v0.3.5 scope until the amendment is accepted.
+Do not code beyond v0.3.6 scope until the amendment is accepted.
 
 ---
 

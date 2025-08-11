@@ -1,15 +1,14 @@
-# AFPSNN MANIFEST — v0.3.5 (single source of truth)
+# AFPSNN MANIFEST — v0.3.6 (single source of truth)
 
 This document is **normative**. Anything not specified here is **not** part of the contract.
 
-**Changelog vs v0.3.3 / v0.3.4**
-- v0.3.5 = v0.3.3 content (full) + onboarding & cross-session GPT rules + paste-first snippet + repo/ops guardrails.
-- No behavioral changes to kernels; clarifies processes and default configs.
+**Changelog vs v0.3.5**
+- Corrected §16 learning FIFO default example (replaced stale "default 12" with computed example: ceil(3·max(τ)/Δt)=75; recommend Kfifo=96 for alignment). No algorithmic changes.
 
 ---
 
 ## 0) Version & Scope
-- Spec version: **v0.3.5**
+- Spec version: **v0.3.6**
 - Target stack: GPU-first (CUDA 12.x, C++17 kernels) orchestrated by host (Python via PyBind11 or C++).
 - Determinism: optional (stable sort + segmented reduce path).
 - Precision: fp32 for pool arithmetic & measures; fp16 permitted for sensitivities/masks/gains/phase.
@@ -55,7 +54,7 @@ This document is **normative**. Anything not specified here is **not** part of t
 ### 2.2 Integration of arrivals (z = A·e^{iφ} into bin b)
 - **X_f[n,b] ← X_f[n,b] + η_f · z**
 - **X_s[n,b] ← X_s[n,b] + η_s · z**
-- η_f, η_s ≥ 0; scalar in v0.3.5 (per-neuron allowed later).
+- η_f, η_s ≥ 0; scalar in v0.3.6 (per-neuron allowed later).
 
 ### 2.3 Combine & measures
 - **X = w_f_eff · X_f + w_s · X_s**  (w_f_eff is gamma-modulated)
@@ -276,7 +275,7 @@ tests/{...}
 > **Why:** New GPT sessions don’t remember prior chats. This section tells any assistant exactly how to get oriented and what it may/may not change.
 
 ### 15.1 Golden “paste-first” snippet (use verbatim)
-You’re joining AFPSNN (v0.3.5). Read AFPSNN-MANIFEST.md §§0–14 (required), then consult API-INTERFACES.md for device shapes and kernel signatures, and SPRINT-01.md for acceptance tests. Follow MANIFEST §11 kernel order exactly. Don’t add Top-K paths. Don’t change public signatures. Keep units in s/Hz/rad. If uncertain, ask before modifying any normative clause.
+You’re joining AFPSNN (v0.3.6). Read AFPSNN-MANIFEST.md §§0–14 (required), then consult API-INTERFACES.md for device shapes and kernel signatures, and SPRINT-01.md for acceptance tests. Follow MANIFEST §11 kernel order exactly. Don’t add Top-K paths. Don’t change public signatures. Keep units in s/Hz/rad. If uncertain, ask before modifying any normative clause.
 
 ### 15.2 Allowed edit zones
 - ✅ Implement/optimize kernels in **src/** and host glue in **models/core/**.
@@ -319,7 +318,7 @@ You’re joining AFPSNN (v0.3.5). Read AFPSNN-MANIFEST.md §§0–14 (required),
 - **neurons**: family mix F/Phi/Hybrid_OR/Hybrid_AND=0.7/0.2/0.1/0.0, Anti_phase_fraction=0.1, residual ρ=0.7
 - **inhibitory**: enabled true; adaptive gain rate=1e−3; target spike rate 5 Hz
 - **plasticity**: STDP+Delay on; η_g=η_d=1e−4; τ_g=τ_d=0.050 s; |Δg|_cap/min=0.02; |Δd|_cap/min=1 bucket; mod_gate_default=0.3
-- **learning FIFO**: Kfifo ≥ ceil(3·max(τ_g,τ_d)/dt_bucket) → default 12
+- **learning FIFO**: Kfifo ≥ ceil(3·max(τ_g, τ_d)/dt_bucket) → with τ_g=τ_d=0.050 s and dt_bucket=0.002 s, ceil(...) = 75; choose **Kfifo=96** for alignment/padding
 - **safety**: loop_gain_soft=0.85, loop_gain_max=0.90; spike_fraction∈[0.005,0.10]
 - **precision**: pools fp32; params fp16
 
@@ -372,4 +371,4 @@ You’re joining AFPSNN (v0.3.5). Read AFPSNN-MANIFEST.md §§0–14 (required),
 - [ ] Safety metrics logged (§12).
 - [ ] Any API/signature change reflected in API-INTERFACES.md and spec bumped (§17).
 
-**End of AFPSNN-MANIFEST v0.3.5**
+**End of AFPSNN-MANIFEST v0.3.6**
