@@ -1,5 +1,5 @@
 [README-BOOTSTRAP.md](https://github.com/user-attachments/files/21697638/README-BOOTSTRAP.md)
-# README-BOOTSTRAP.md (v0.3.5)
+# README-BOOTSTRAP.md (v0.3.6)
 
 This is a quickstart for humans (and future GPT sessions) to bring the repo up, build, run, and contribute safely.
 Precedence: **AFPSNN-MANIFEST.md** (normative) > **API-INTERFACES.md** (ABI) > this README > `configs/*`.
@@ -36,7 +36,7 @@ pytest -q
 
 ```bash
 project_root/
-  AFPSNN-MANIFEST.md           # normative spec (v0.3.5)  ← source of truth
+ AFPSNN-MANIFEST.md           # normative spec (v0.3.6)  ← source of truth
   API-INTERFACES.md            # device shapes & kernel ABI
   README-BOOTSTRAP.md          # you are here (human/GPT quickstart)
   README-SESSION-PRIMER.md     # paste-first ritual for new GPT sessions
@@ -61,7 +61,7 @@ project_root/
 
 ## 2) Config layering & safety
 
-- MANIFEST v0.3.5 is binding. If a config disagrees, **MANIFEST wins**.
+- MANIFEST v0.3.6 is binding. If a config disagrees, **MANIFEST wins**.
 - API-INTERFACES.md defines device shapes and kernel signatures. Do **not** change shapes without updating the spec.
 - `configs/features.yaml` and `configs/sim_config.yaml` are runtime defaults only.
 - Determinism toggle: `sim.deterministic=true` enables stable-sort drains + seeded stochastic rounding (§4.5).
