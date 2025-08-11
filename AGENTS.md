@@ -1,7 +1,7 @@
 # AGENTS.md — How ChatGPT/Codex should work with this repo
 
 This file is non-normative. It complements the existing docs (keep them unchanged):
-- **AFPSNN-MANIFEST.md** (normative spec, v0.3.5)
+- **AFPSNN-MANIFEST.md** (normative spec, v0.3.6)
 - **API-INTERFACES.md** (shapes/ABI)
 - **SPRINT-01.md** (acceptance)
 - **README-SESSION-PRIMER.md** (ritual for normal ChatGPT sessions)

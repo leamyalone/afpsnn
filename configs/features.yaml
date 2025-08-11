@@ -1,9 +1,9 @@
 # AFPSNN FEATURES & DEFAULTS (runtime config)
-# This file is NOT normative. If anything here conflicts with AFPSNN-MANIFEST v0.3.5,
+# This file is NOT normative. If anything here conflicts with AFPSNN-MANIFEST v0.3.6,
 # the MANIFEST wins. Section tags like [§X.Y] point to the spec clauses they map to.
 
 meta:
-  spec_version: "v0.3.5"    # [§0] Traceability only; does not change behavior.
+  spec_version: "v0.3.6"    # [§0] Traceability only; does not change behavior.
   notes: >
     Changing defaults here does not alter the spec. If a change should become normative,
     bump the MANIFEST version and mirror the value in §16.
