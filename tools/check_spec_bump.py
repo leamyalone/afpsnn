@@ -7,9 +7,7 @@ repo = pathlib.Path(__file__).resolve().parents[1]
 base = "origin/main"
 
 try:
-    changed = subprocess.check_output(
-        ["git", "diff", "--name-only", f"{base}...HEAD"], text=True
-    ).splitlines()
+    changed = subprocess.check_output(["git", "diff", "--name-only", f"{base}...HEAD"], text=True).splitlines()
 except subprocess.CalledProcessError:
     changed = []
 
@@ -22,7 +20,7 @@ if not manifest_path.exists():
 
 manifest = manifest_path.read_text(encoding="utf-8", errors="ignore")
 
-# The manifest line is formatted as "Spec version: **v0.3.5**" with markdown
+# The manifest line is formatted as "Spec version: **v0.3.6**" with markdown
 # emphasis. Accept optional surrounding asterisks so the check works even if
 # the version string is bolded.
 m = re.search(r"Spec version:\s*\**v(\d+\.\d+\.\d+)\**", manifest)
@@ -31,10 +29,8 @@ if not m:
     sys.exit(1)
 version = m.group(1)
 
-if api_touch and version == "0.3.5":
-    print(
-        "API/kernels changed but MANIFEST still at v0.3.5 — require v0.3.6 + SPEC AMENDMENT in PR."
-    )
+if api_touch and version == "0.3.6":
+    print("API/kernels changed but MANIFEST still at v0.3.6 — require v0.3.7 + SPEC AMENDMENT in PR.")
     sys.exit(2)
 
 print("Spec bump guard OK.")
