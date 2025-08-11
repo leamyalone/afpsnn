@@ -1,6 +1,6 @@
-# SPRINT 01 — Foundational Bring-Up (v0.3.5)
+# SPRINT 01 — Foundational Bring-Up (v0.3.6)
 
-All tasks reference **AFPSNN-MANIFEST v0.3.5** and **FEATURES.yaml (baseline mirrors MANIFEST §16)**.
+All tasks reference **AFPSNN-MANIFEST v0.3.6** and **FEATURES.yaml (baseline mirrors MANIFEST §16)**.
 Each task MUST ship unit + synthetic tests and log metrics.
 Contributors MUST follow MANIFEST §15 (Onboarding) before making changes.
 
@@ -154,4 +154,4 @@ Contributors MUST follow MANIFEST §15 (Onboarding) before making changes.
 - E/I stabilization verified; plasticity gated and numerically safe.
 - Loop-gain proxy within guardrails; backpressure events resolve within ≤ 1 s wall-time equivalent.
 
-**End of SPRINT-01 v0.3.5**
+**End of SPRINT-01 v0.3.6**
